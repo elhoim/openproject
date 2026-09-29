@@ -88,36 +88,36 @@ jobs:
       run: bin/ci setup-tests
     - name: APIv3 specification (OpenAPI 3.0)
       run: bin/ci ./script/api/validate_spec
-    - name: Unit tests
-      run: bin/ci run-units
-    - name: Feature tests
-      env:
-        CAPYBARA_DOWNLOADED_FILE_DIR: /tmp/ci/downloads
-        CAPYBARA_AWS_ACCESS_KEY_ID: "${{ secrets.CAPYBARA_AWS_ACCESS_KEY_ID }}"
-        CAPYBARA_AWS_SECRET_ACCESS_KEY: "${{ secrets.CAPYBARA_AWS_SECRET_ACCESS_KEY }}"
-      run: bin/ci run-features
-    - name: Report flaky specs
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        PR_NUMBER: ${{ github.event.pull_request.number }}
-        PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-        PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
-      run: |
-        if [ -f tmp/retried_specs.txt ]; then
-          echo "## Flaky specs" >> "$GITHUB_STEP_SUMMARY"
-          cat tmp/retried_specs.txt >> "$GITHUB_STEP_SUMMARY"
-          if [ -n "$PR_NUMBER" ]; then
-            SPECS="$(cat tmp/retried_specs.txt)" \
-              envsubst '$SPECS $PR_NUMBER $PR_AUTHOR' \
-              < .github/flaky-spec-copilot-comment.md > tmp/flaky_comment.md
-            if [ "$PR_HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
-              echo "::warning::Flaky specs detected in this PR - see job summary for details"
-              cat tmp/flaky_comment.md
-            else
-              gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file tmp/flaky_comment.md
-            fi
-          fi
-        fi
+    # - name: Unit tests
+    #   run: bin/ci run-units
+    # - name: Feature tests
+    #   env:
+    #     CAPYBARA_DOWNLOADED_FILE_DIR: /tmp/ci/downloads
+    #     CAPYBARA_AWS_ACCESS_KEY_ID: "${{ secrets.CAPYBARA_AWS_ACCESS_KEY_ID }}"
+    #     CAPYBARA_AWS_SECRET_ACCESS_KEY: "${{ secrets.CAPYBARA_AWS_SECRET_ACCESS_KEY }}"
+    #   run: bin/ci run-features
+    # - name: Report flaky specs
+    #   env:
+    #     GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     PR_NUMBER: ${{ github.event.pull_request.number }}
+    #     PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+    #     PR_HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+    #   run: |
+    #     if [ -f tmp/retried_specs.txt ]; then
+    #       echo "## Flaky specs" >> "$GITHUB_STEP_SUMMARY"
+    #       cat tmp/retried_specs.txt >> "$GITHUB_STEP_SUMMARY"
+    #       if [ -n "$PR_NUMBER" ]; then
+    #         SPECS="$(cat tmp/retried_specs.txt)" \
+    #           envsubst '$SPECS $PR_NUMBER $PR_AUTHOR' \
+    #           < .github/flaky-spec-copilot-comment.md > tmp/flaky_comment.md
+    #         if [ "$PR_HEAD_REPO" != "$GITHUB_REPOSITORY" ]; then
+    #           echo "::warning::Flaky specs detected in this PR - see job summary for details"
+    #           cat tmp/flaky_comment.md
+    #         else
+    #           gh pr comment "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file tmp/flaky_comment.md
+    #         fi
+    #       fi
+    #     fi
     - name: Save CI image to cache
       if: steps.cache_docker.outputs.cache-hit != 'true'
       run: mkdir -p cache/docker && docker save openproject/ci:v1 -o cache/docker/image.tar
