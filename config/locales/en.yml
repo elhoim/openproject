@@ -6138,6 +6138,7 @@ en:
         You are being redirected to the quarantine page. Use this page to delete or override quarantined files.
       title: "Virus scanning"
     attachments:
+      attachment_max_size_env_caption: "You can edit this value via environment variables if you have access."
       show_work_package_attachments: >
         Deactivating this option will hide the attachments list on the work packages files tab for new projects. The
         files attached in the description of a work package will still be uploaded in the internal attachments storage.
